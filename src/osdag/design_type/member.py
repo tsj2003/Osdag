@@ -2032,7 +2032,12 @@ class Member(Main):
     def tab_section(self, input_dictionary):
 
         "In design preference, it shows other properties of section used "
-
+        
+        if not input_dictionary or input_dictionary[KEY_SECSIZE] == 'Select Section' or \
+                input_dictionary[KEY_MATERIAL] == 'Select Material':
+            designation = ''
+            material_grade = ''
+            source = 'Custom'
         if not input_dictionary or input_dictionary[KEY_SECSIZE] == 'Select Section' or \
                 input_dictionary[KEY_MATERIAL] == 'Select Material':
             designation = ''
@@ -2166,6 +2171,8 @@ class Member(Main):
             fy = material_attributes.fy
 
         section = []
+        
+    
 
         if input_dictionary:
             designation_list = input_dictionary[KEY_SECSIZE]
@@ -2792,23 +2799,25 @@ class Member(Main):
         # t2 = (KEY_ALLOW_UR, KEY_DISP_UR, TYPE_TEXTBOX, None, values[KEY_ALLOW_UR])
         # optimum.append(t2)
 
-        t2 = (
-        KEY_EFFECTIVE_AREA_PARA, KEY_DISP_EFFECTIVE_AREA_PARA, TYPE_TEXTBOX, None, values[KEY_EFFECTIVE_AREA_PARA])
-        optimum.append(t2)
+        #t2 = (
+        # KEY_EFFECTIVE_AREA_PARA, KEY_DISP_EFFECTIVE_AREA_PARA, TYPE_TEXTBOX, None, values[KEY_EFFECTIVE_AREA_PARA])
+        # optimum.append(t2)
 
-        t1 = (KEY_ALLOW_CLASS, KEY_DISP_CLASS, TYPE_COMBOBOX, ['Yes', 'No'], values[KEY_ALLOW_CLASS])
+        t1 = (KEY_ALLOW_CLASS, KEY_DISP_CLASS, TYPE_COMBOBOX, ['Symmetric Girder', 'Unymmetric Girder'], values[KEY_ALLOW_CLASS])
         optimum.append(t1)
+        
+        return optimum
 
-        t1 = (KEY_LOAD, KEY_DISP_LOAD, TYPE_COMBOBOX, KEY_DISP_LOAD_list, values[KEY_LOAD])
-        optimum.append(t1)
+        # t1 = (KEY_LOAD, KEY_DISP_LOAD, TYPE_COMBOBOX, KEY_DISP_LOAD_list, values[KEY_LOAD])
+        # optimum.append(t1)
 
-        t2 = (
-            KEY_LENGTH_OVERWRITE, KEY_DISPP_LENGTH_OVERWRITE, TYPE_TEXTBOX, None, values[KEY_LENGTH_OVERWRITE])
-        optimum.append(t2)
+        # t2 = (
+        #     KEY_LENGTH_OVERWRITE, KEY_DISPP_LENGTH_OVERWRITE, TYPE_TEXTBOX, None, values[KEY_LENGTH_OVERWRITE])
+        # optimum.append(t2)
 
-        t2 = (
-            KEY_BEARING_LENGTH, KEY_DISP_BEARING_LENGTH + ' (mm)', TYPE_TEXTBOX, None, values[KEY_BEARING_LENGTH])
-        optimum.append(t2)
+        # t2 = (
+        #     KEY_BEARING_LENGTH, KEY_DISP_BEARING_LENGTH + ' (mm)', TYPE_TEXTBOX, None, values[KEY_BEARING_LENGTH])
+        # optimum.append(t2)
 
         print("input_dictionary",input_dictionary)
 

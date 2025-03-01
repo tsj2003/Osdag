@@ -165,6 +165,7 @@ from .design_type.compression_member.Column import ColumnDesign
 #from .design_type.beam_column.Beam_Colum_Compression import ColumnDesign
 
 from .design_type.flexural_member.flexure import Flexure
+from .design_type.plate_girder.plate_girder_ui import Plateui
 from .design_type.flexural_member.flexure_cantilever import Flexure_Cantilever
 from .design_type.flexural_member.flexure_othersupp import Flexure_Misc
 # from .design_type.plate_girder.weldedPlateGirder import PlateGirderWelded
@@ -324,7 +325,7 @@ class OsdagMainWindow(QMainWindow):
                 # ],
                 'Plate Girder' : [ #TODO: Check number of sub modules required
                     ('Simply Supported', str(files('osdag.data.ResourceFiles.images').joinpath('simply-supported-beam.jpg')), 'Welded_Girder_Design'),
-                    self.show_girder_design,
+                    self.show_girder_design1,
                 ],
                 'Truss' : self.Under_Development,
                 '2D Frame' : self.Under_Development,
@@ -726,6 +727,19 @@ class OsdagMainWindow(QMainWindow):
             self.ui2 = Ui_ModuleWindow(PlateGirderWelded, ' ')
             self.ui2.show()
             self.ui2.closed.connect(self.show)
+
+    def show_girder_design1(self):
+        """ Create radio buttons for the sub-modules under the compression module"""
+        print('hi')
+        btn = self.findChild(QRadioButton, "Welded_Girder_Design")
+        if btn is not None and btn.isChecked():
+            self.hide()
+            self.ui2 = Ui_ModuleWindow(Plateui, ' ')
+            self.ui2.show()
+            self.ui2.closed.connect(self.show)
+            return
+
+        QMessageBox.about(self, "INFO", "Please select appropriate Plate Girder module")        
 
 ################################# Help Actions ############################################
 

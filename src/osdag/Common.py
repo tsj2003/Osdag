@@ -77,6 +77,8 @@ def connectdb(table_name, call_type="dropdown"):
     # @author: Amir
     conn = sqlite3.connect(PATH_TO_DATABASE)
     lst = []
+    
+    print('TABLE->>>>>', table_name)
     if table_name == "Angles":
         cursor = conn.execute("SELECT Designation FROM Angles")
 
@@ -85,6 +87,8 @@ def connectdb(table_name, call_type="dropdown"):
 
     elif table_name == "Beams":
         cursor = conn.execute("SELECT Designation FROM Beams")
+        
+    
 
     elif table_name == "Bolt":
         cursor = conn.execute("SELECT Bolt_diameter FROM Bolt")
@@ -356,12 +360,15 @@ KEY_DISP_COMPRESSION = 'Compression Member'
 KEY_DISP_COMPRESSION_STRUT = 'Compression Member Design - Strut Design'
 
 DISP_TITLE_CM = 'Connecting Members'
+DISP_TITLE_PG = 'Section Properties'
 
 # Compression Members
 KEY_DISP_COMPRESSION_COLUMN = 'Columns with known support conditions'
 KEY_DISP_COMPRESSION_Strut = 'Struts in Trusses'
 KEY_SECTION_PROPERTY = 'Section Property'
 KEY_SECTION_DATA = 'Section Data'
+KEY_SECTION_DATA_PG = 'Design Specific input'
+KEY_Loading_DATA_PG = 'Loading Data'
 KEY_MEMBER_PROPERTY = 'Member Property'
 KEY_MEMBER_DATA = 'Member.Data'
 KEY_SECTION_PROFILE = 'Section.Profile'
@@ -384,6 +391,10 @@ KEY_DISP_UNSUPPORTED_LEN_ZZ = 'Unsupported Length (z-z), mm *'
 KEY_UNSUPPORTED_LEN_YY = 'Unsupported.Length_yy'
 KEY_DISP_UNSUPPORTED_LEN_YY = 'Unsupported Length (y-y), mm *'
 KEY_DESIGN_COMPRESSION = 'Design Results'
+KEY_DESIGN_COMPRESSION_PG = 'Material Selection'
+KEY_DESIGN_STIFFER_PG = 'Stiffener Details'
+KEY_DESIGN_STIFFER_METH_PG = 'Stiffener Design Methodology'
+KEY_DESIGN_STIFFER_METH_PG_2 ='Intermediate Transverse Stiffener Thickness'
 KEY_DESIGN_STRENGTH_COMPRESSION = 'Design.Strength'
 KEY_MIN_DESIGN_COMP_STRESS = 'MinCompStress'
 KEY_MIN_DESIGN_COMP_STRESS_VAL = 'Min. Design Comp.Stress (MPa)'
@@ -395,10 +406,13 @@ KEY_DISP_DESIGN_STRENGTH_COMPRESSION = 'Design Strength (kN)'
 DISP_TITLE_OPTIMUM_SECTION = 'Optimum Section'
 KEY_TITLE_OPTIMUM_DESIGNATION = 'Optimum.Designation'
 KEY_DISP_TITLE_OPTIMUM_DESIGNATION = 'Designation'
+KEY_DISP_TITLE_OPTIMUM_DESIGNATION_PG = 'Section Class'
 KEY_OPTIMUM_UR_COMPRESSION = 'Optimum.UR'
 KEY_DISP_OPTIMUM_UR_COMPRESSION = 'Utilization Ratio'
+KEY_DISP_OPTIMUM_DS_COMPRESSION_PG = 'Depth of Section (mm)'
 KEY_OPTIMUM_SC = 'Optimum.SectionClassification'
 KEY_DISP_OPTIMUM_SC = 'Section Classification'
+KEY_DISP_OPTIMUM_PG = 'Top and Bottom Flange Width (mm)'
 DISP_TITLE_ZZ = 'Major Axis (z-z)'
 DISP_TITLE_YY = 'Minor Axis (y-y)'
 KEY_EFF_LEN_ZZ = 'Major.Effective_Length'
@@ -443,17 +457,24 @@ KEY_SHEAR_STRENGTH = 'Shear.Strength'
 KEY_MOMENT_STRENGTH = 'Moment.Strength'
 KEY_DISP_HIGH_SHEAR= 'High Shear Check'
 KEY_HIGH_SHEAR = 'Shear.High'
-KEY_DISP_DESIGN_STRENGTH_SHEAR = 'Shear Strength (kN)' # Design 
-KEY_DISP_DESIGN_STRENGTH_MOMENT = 'Moment Strength (kNm)' # Design 
+KEY_DISP_DESIGN_STRENGTH_SHEAR = 'Shear Strength (kN)'
+KEY_DISP_DESIGN_STRENGTH_SHEAR_PG = 'Flange Material' 
+KEY_DISP_DESIGN_STIFFER_PG = 'Stiffener Thickness'# Design 
+KEY_DISP_DESIGN_STRENGTH_MOMENT = 'Moment Strength (kNm)' 
+KEY_DISP_DESIGN_STRENGTH_MOMENT_PG = 'Web Material'
+KEY_DISP_DESIGN_STIFFER_SPACE_PG = 'Stiffener Spacing'# Design 
 KEY_DISP_REDUCE_STRENGTH_MOMENT = 'Reduced Moment Strength (kNm)'
 KEY_EULER_BUCKLING_STRESS = 'MajorBucklingStress'
-KEY_DISP_EULER_BUCKLING_STRESS = 'Buckling Stress (MPa)' # Euler 
+KEY_DISP_EULER_BUCKLING_STRESS = 'Buckling Stress (MPa)'
+KEY_DISP_PERMISSIBLE_PG = 'Permissible Deflection (mm)' # Euler 
 KEY_EFF_SEC_AREA = 'MajorEffSecArea'
-KEY_DISP_EFF_SEC_AREA = 'Eff. Sectional Area (mm<sup>2</sup>)' # ective
+KEY_DISP_EFF_SEC_AREA = 'Eff. Sectional Area (mm<sup>2</sup>)'
+KEY_DISP_THICKNESS_PG = 'Web Thickness (mm)' # ective
 KEY_EFF_LEN = 'Major.Effective_Length'
 KEY_DISP_EFF_LEN = 'Eff. Length (m)' # ective
 KEY_BUCKLING_CURVE = 'BucklingCurve'
-KEY_DISP_BUCKLING_CURVE = 'Buckling Curve' #  Classification
+KEY_DISP_BUCKLING_CURVE = 'Buckling Curve' 
+KEY_DISP_DEFLECTION_PG = 'Actual Deflection (mm)'#  Classification
 KEY_IMPERFECTION_FACTOR = 'ImperfectionFactor'
 KEY_DISP_IMPERFECTION_FACTOR = 'Imperfection' # Factor
 KEY_SR_FACTOR = 'StressReductionFactor'
@@ -463,9 +484,11 @@ KEY_DISP_NON_DIM_ESR = 'ND Eff. Senderness'
 KEY_ALLOW_CLASS = 'Optimum.Class'
 KEY_DISP_CLASS = 'Semi-compact sections'
 DISP_TITLE_STRUT_SECTION = 'Section Details'
+DISP_TITLE_STRUT_SECTION_PG = 'Section Properties'
 KEY_ALLOW_LOAD = 'Load.Type'
 KEY_DISP_LOAD = 'Type of Load'
 KEY_DISP_ESR = 'Effective SR'
+KEY_DISP_UTILIZATION_RATION_PG = 'Utilization Ratio'
 KEY_ESR = 'ESR'
 KEY_SR_lambdavv = 'ESRLambdavv'
 KEY_DISP_SR_lambdavv = 'Lambda v-v'
@@ -529,17 +552,25 @@ KEY_Flexure_Member_MAIN_MODULE = 'Flexure Member'
 KEY_DISP_FLEXURE = 'Flexural Members - Simply Supported'
 KEY_DISP_FLEXURE2 = 'Flexural Members - Cantilever'
 KEY_DISP_FLEXURE3 = 'Flexural Members'
+KEY_DISP_PLATE_GIRDER = 'Plate Girder'
 
 KEY_DISP_PLASTIC_STRENGTH_MOMENT = 'Plastic Strength (kNm)'
 KEY_DISP_Bending_STRENGTH_MOMENT = 'Bending Strength (kNm)'
 KEY_DISP_LTB_Bending_STRENGTH_MOMENT = 'Lateral Torsional Buckling Strength (kNm)'
 
 KEY_DISP_betab_constatnt= 'Beta<sub>b</sub>'
+KEY_DISP_FLANG_PG= 'Top and Bottom Flange Thickness (mm)'
+KEY_DISP_TOP_PG= 'Top Flange Thickness'
+KEY_DISP_WEB_THICKNESS_PG= 'Web Thickness'
+
+KEY_DISP_Selection_PG= 'Selection modes'
+KEY_DISP_AVAILABLE_THICKNESS_PG= 'Available Thickness Values'
 KEY_betab_constatnt= 'Beta.Constant'
 KEY_BUCKLING_STRENGTH= 'Buckling.Strength'
 KEY_DISP_BUCKLING_STRENGTH= 'Buckling Strength (kN)'
 KEY_WEB_CRIPPLING= 'Crippling.Strength'
 KEY_DISP_CRIPPLING_STRENGTH = 'Crippling Strength (kN)'
+
 KEY_DISP_LTB= 'Lateral Torsional Buckling Details'
 KEY_DISP_Elastic_CM= 'Critical Moment (M<sub>cr</sub>)' # Elastic 
 KEY_DISP_Elastic_CM_latex= 'Elastic Critical Moment(kNm)' # 
@@ -554,6 +585,7 @@ KEY_SR_FACTOR_LTB = 'SR.LTB'
 KEY_NON_DIM_ESR_LTB = 'NDESR.LTB'
 # KEY_LTB= 'Lateral Torsional Buckling Details'
 KEY_WEB_BUCKLING= 'Web Buckling Details'
+KEY_PERFORMANCE_EVALUATION = 'Performance Evaluation'
 KEY_BEARING_LENGTH = 'Bearing.Length'
 Simply_Supported_img = str(files("osdag.data.ResourceFiles.images").joinpath("ss_beam.png"))
 Cantilever_img = str(files("osdag.data.ResourceFiles.images").joinpath("c_beam.png"))
@@ -585,6 +617,25 @@ KEY_DISP_SUPPORT_LIST = list((KEY_DISP_SUPPORT1, KEY_DISP_SUPPORT2)) #[KEY_DISP_
 # KEY_SUPPORT1 = 'SimpSupport.Torsional'
 # KEY_SUPPORT2 = 'SimpSupport.Warping'
 KEY_DISP_LENGTH_BEAM = 'Effective Span (m)*'
+KEY_DISP_LENGTH_BEAM_PG = 'Span (m)*'
+KEY_DISP_LENGTH_TOP_BEAM_PG = 'Top Flange Width'
+KEY_DISP_TOP_FLANGE_PG = 'Top Flange Width (mm)*'
+KEY_DISP_OVERALL_DEPTH_PG = 'Overall Depth of Section'
+KEY_DISP_TOP_FLANGE_THICKNESS_PG = 'Top Flange Thickness (mm)*'
+KEY_DISP_BOTTOM_FLANGE_THICKNESS_PG = 'Bottom Flange Thickness (mm)*'
+KEY_DISP_BOTTOM_FLANGE_FACTORED_PG = 'Factored Bending Moment (kNm)*'
+KEY_DISP_WEB_FLANGE_THICKNESS_PG = 'Web Thickness (mm)*'
+KEY_DISP_WEB_FLANGE_THICKNESS_PG = 'Total Depth of Section'
+KEY_DISP_BOTTOM_FLANGE_PG = 'Bottom Flange Width (mm)*'
+KEY_DISP_DEPTH_FLANGE_PG = 'Depth of Section (mm)*'
+KEY_DISP_LENGTH_BEAM_pg = ' Span (mm)*'
+KEY_DISP_WEB_FLANGE_THICKNESS_PG = 'Total Depth of Section'
+KEY_DISP_WEB_FLANGE_THICKNESS_2_PG = 'Factored Shear Force (kN)'
+KEY_DISP_WEB_FLANGE_THICKNESS_PG = 'Total Depth of Section'
+KEY_DISP_WEB_FLANGE_THICKNESS_PG = 'Total Depth of Section'
+KEY_DISP_BOTTOM_FLANGE_PG = 'Bottom Flange Width (mm)*'
+KEY_DISP_DEPTH_FLANGE_PG = 'Depth of Section (mm)*'
+KEY_DISP_LENGTH_BEAM_pg = ' Span (mm)*'
 KEY_LOAD = 'Loading.Condition'
 KEY_DISP_LOAD = 'Loading Condition'
 KEY_DISP_LOAD1 ='Normal'
@@ -604,9 +655,11 @@ Warping_Restraint2 = 'Compression flange fully restrained'
 Warping_Restraint4 = 'Compressicm flange partially restrained'
 Warping_Restraint5 = 'Warping not restrained in both flanges'
 Warping_Restraint_list = list(( Warping_Restraint1, Warping_Restraint2, Warping_Restraint4, Warping_Restraint5))
+Warping_Restraint_list_pg = list(( 'Both Flange Restraint', 'No Restraint'))
+
 DISP_SUPPORT_RES = 'Support restraint *'
 KEY_SUPPORT_TYPE = 'Cantilever.Support'
-Support1 = 'Continous, with lateral restraint to top flange'
+Support1 = 'Continous, with lateral restraint to '
 Support2 = 'Continous, with partial torsional restraint'
 Support3 = 'Continous, with lateral and torsional restraint'
 Support4 = 'Restrained laterally, torsionally and against rotation on flange'
@@ -953,7 +1006,10 @@ KEY_DISP_BEAMSEC = 'Beam Section *'
 KEY_DISP_BEAMSEC_REPORT = 'Beam Section'
 KEY_DISP_SECBM = 'Secondary Beam *'
 DISP_TITLE_FSL = 'Factored Loads'
+DISP_TITLE_THICKNESS_PG = 'Thickness Inputs'
+DISP_TITLE_LOAD_PG= 'Load Inputs'
 KEY_DISP_MOMENT = 'Bending Moment (kNm) *'
+KEY_DISP_MOMENT_PG = 'Maximum Bending Moment (kNm)*'
 
 KEY_DISP_TOP_ANGLE = 'Top Angle'
 
@@ -999,6 +1055,7 @@ SECTION_CLASSIFICATION = "Section Classification"
 
 KEY_DISP_D = 'Diameter (mm) *'
 KEY_DISP_SHEAR = 'Shear Force (kN) *'
+KEY_DISP_MAXIMUM_PG = 'Maximum Shear Force (kN)*'
 KEY_DISP_AXIAL = 'Axial Force (kN)'
 KEY_DISP_AXIAL_STAR = 'Axial Force (kN)* '
 DISP_TITLE_PLATE = 'Plate'
@@ -1319,6 +1376,7 @@ KEY_DISP_DP_DETAILING_CORROSIVE_INFLUENCES = 'Are the Members Exposed to <br> Co
 KEY_DISP_DP_DETAILING_CORROSIVE_INFLUENCES_BEAM = 'Are the Members Exposed to Corrosive Influences?'
 KEY_DISP_CORR_INFLUENCES = 'Members exposed to corrosive influences?'
 KEY_DISP_DP_DESIGN_METHOD = 'Design Method'
+KEY_DISP_DP_STIFFER_METHOD = 'Stiffener Design Methodology'
 
 KEY_DISP_DP_DESIGN_BASE_PLATE = 'Base Plate Analysis'
 KEY_DISP_GAP = 'Gap Between Members (mm)'
@@ -2220,11 +2278,15 @@ KEY_OUT_CLEAT_MOM_CAPACITY = 'Cleat.MomCapacity'
 
 
 KEY_DISP_SEC_PROFILE = 'Section Profile*'
+KEY_DISP_SEC_PROFILE_PG_THICKNESS = 'Section Profile*'
 KEY_DISP_SEC_TYPE = 'Section Type'
 VALUES_SEC_PROFILE = ['Beams and Columns', 'RHS and SHS', 'CHS'] #,'Channels', 'Back to Back Channels'
 VALUES_SEC_PROFILE_2 = ['Angles', 'Back to Back Angles', 'Star Angles', 'Channels', 'Back to Back Channels']
 #, 'Channels', 'Back to Back Channels'
-VALUES_SEC_PROFILE3 = ['Beams and Columns'] #,'Channels', 'Back to Back Channels'
+VALUES_SEC_PROFILE3 = ['Beams and Columns']
+LIST_ALL_CUSTOMISED = ['All' , 'Customized']
+LIST_SECTION_MODES = ['Optimized' , 'Customized']
+LIST_AVAILABLE_THICKNESS = [' ','8', '10', '12', '14', '16', '18', '20', '22', '25', '28', '32', '36', '40', '45', '50', '56', '63']#,'Channels', 'Back to Back Channels'
 KEY_LENZZ = 'Member.Length_zz'
 KEY_DISP_LENZZ = 'Length (z-z)(mm)*'
 
@@ -2271,6 +2333,8 @@ DISP_TITLE_COMPMEM='Compression member'
 KEY_SECTYPE = 'Section Type'
 KEY_DISP_SECTYPE = 'Section Type*'
 KEY_DISP_SECSIZE = 'Section Designation*'
+KEY_DISP_SECSIZE_pg = 'Type of Structure*'
+KEY_DISP_SUP_PG = 'Web Philosophy'
 KEY_DISP_SECSIZE_REPORT = 'Section Size'
 KEY_LENMEM = 'Length of Member'
 KEY_DISP_LENMEM = 'Length of Member'

@@ -126,10 +126,27 @@ class Main():
 
         design = []
 
-        t1 = (KEY_DP_DESIGN_METHOD, KEY_DISP_DP_DESIGN_METHOD, TYPE_COMBOBOX,
-              ['Limit State Design', 'Limit State (capacity based) Design', 'Working Stress Design'],
+        # t1 = (KEY_DP_DESIGN_METHOD, KEY_DISP_DP_DESIGN_METHOD, TYPE_COMBOBOX,
+        #       ['Limit State Design', 'Limit State (capacity based) Design', 'Working Stress Design'],
+        #       values[KEY_DP_DESIGN_METHOD])
+        # design.append(t1)
+        
+        t2= (KEY_DP_DESIGN_METHOD, KEY_DESIGN_STIFFER_METH_PG, TYPE_COMBOBOX,
+              ['Tension Field Capacity', 'Limit State (capacity based) Design', ''],
               values[KEY_DP_DESIGN_METHOD])
-        design.append(t1)
+        design.append(t2)
+        
+        t2= (KEY_DP_DESIGN_METHOD, KEY_DESIGN_STIFFER_METH_PG_2, TYPE_COMBOBOX,
+              ['Thicknesses', '', ''],
+              values[KEY_DP_DESIGN_METHOD])
+        design.append(t2)
+        
+        
+        t2 = (KEY_DP_DESIGN_METHOD, KEY_DESIGN_STIFFER_METH_PG_2, TYPE_TEXTBOX,
+      [], ' ')
+        design.append(t2)
+        
+        
 
         return design
 
