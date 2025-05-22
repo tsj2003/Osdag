@@ -429,47 +429,50 @@ class ButtJointBolted(MomentConnection):
             return all_errors
         
     def set_input_values(self, design_dictionary):
-
-        "initialisation of components required to design a tension member along with connection"
-
+        """Initialize components required for butt joint design as per IS 800:2007"""
         self.module = design_dictionary[KEY_MODULE]
-        self.mainmodule = "Lap Joint Bolted Connection"
+        self.mainmodule = "Butt Joint Bolted Connection"
         self.main_material = design_dictionary[KEY_MATERIAL]
         self.tensile_force = design_dictionary[KEY_TENSILE_FORCE]
         self.width = design_dictionary[KEY_PLATE_WIDTH]
+        
+        # Initialize plates with material properties
         self.plate1 = Plate(thickness=[design_dictionary[KEY_PLATE1_THICKNESS]],
-                        material_grade=design_dictionary[KEY_MATERIAL],width=design_dictionary[KEY_PLATE_WIDTH])
+                        material_grade=design_dictionary[KEY_MATERIAL],
+                        width=design_dictionary[KEY_PLATE_WIDTH])
         self.plate2 = Plate(thickness=[design_dictionary[KEY_PLATE2_THICKNESS]],
-                            material_grade=design_dictionary[KEY_MATERIAL],width=design_dictionary[KEY_PLATE_WIDTH])
-        self.bolt = Bolt(grade=design_dictionary[KEY_GRD], diameter=design_dictionary[KEY_D],
+                            material_grade=design_dictionary[KEY_MATERIAL],
+                            width=design_dictionary[KEY_PLATE_WIDTH])
+        
+        # Initialize bolt with properties
+        self.bolt = Bolt(grade=design_dictionary[KEY_GRD], 
+                        diameter=design_dictionary[KEY_D],
                         bolt_type=design_dictionary[KEY_TYP],
                         bolt_hole_type=design_dictionary[KEY_DP_BOLT_HOLE_TYPE],
                         edge_type=design_dictionary[KEY_DP_DETAILING_EDGE_TYPE],
-                        mu_f=design_dictionary.get(KEY_DP_BOLT_SLIP_FACTOR, None),
-                        )
+                        mu_f=design_dictionary.get(KEY_DP_BOLT_SLIP_FACTOR, None))
+        
+        # Calculate cover plate thickness as per Cl. 10.2.4.2
         plate1_thk = float(design_dictionary[KEY_PLATE1_THICKNESS])
         plate2_thk = float(design_dictionary[KEY_PLATE2_THICKNESS])
         Tmin = min(plate1_thk, plate2_thk)
         cover_plate_type_str = design_dictionary[KEY_COVER_PLATE]
 
-        # Cover plate and packing plate logic (inserted as requested)
+        # Cover plate and packing plate logic as per documentation
         available_thicknesses = [float(thk) for thk in PLATE_THICKNESS_SAIL]
         if "double" in cover_plate_type_str.lower():
             self.planes = 2
-            Tmin = min(plate1_thk, plate2_thk)
-            Tcp = math.ceil((9.0 / 8.0) * Tmin)
-
-            # Round Tcp to next available thickness (assuming available_thicknesses is a list)
+            Tcp = math.ceil((9.0 / 8.0) * Tmin)  # Double cover plate thickness as per Eq. 3.2
             self.calculated_cover_plate_thickness = min(
                 [thk for thk in available_thicknesses if thk >= Tcp],
-                default=Tcp  # fallback in case no available thickness is greater
+                default=Tcp
             )
 
-            # Packing plate logic (only if plates are of unequal thickness)
+            # Packing plate logic as per Cl. 10.3.3.2
             if abs(plate1_thk - plate2_thk) > 0.001:
                 self.packing_plate_thickness = abs(plate1_thk - plate2_thk)
-                print("-------Packing plate thickness----", self.packing_plate_thickness)
                 if self.packing_plate_thickness > 6.0:
+                    # βpkg calculation as per Eq. 3.3
                     self.beta_pkg = (1.0 - 0.0125 * self.packing_plate_thickness)
                 else:
                     self.beta_pkg = 1.0
@@ -479,39 +482,28 @@ class ButtJointBolted(MomentConnection):
 
         elif "single" in cover_plate_type_str.lower():
             self.planes = 1
-            Tmin = min(plate1_thk, plate2_thk)
-            Tcp = math.ceil(5.0 / 8.0) * Tmin
-
-            # Round Tcp to next available thickness
+            Tcp = math.ceil((5.0 / 8.0) * Tmin)  # Single cover plate thickness as per Eq. 3.1
             self.calculated_cover_plate_thickness = min(
                 [thk for thk in available_thicknesses if thk >= Tcp],
                 default=Tcp
             )
-
             self.packing_plate_thickness = 0.0
             self.beta_pkg = 1.0
 
         else:
             self.planes = 1
-            Tmin = min(plate1_thk, plate2_thk)
             Tcp = Tmin
-
-            # Round Tcp to next available thickness
             self.calculated_cover_plate_thickness = min(
                 [thk for thk in available_thicknesses if thk >= Tcp],
                 default=Tcp
             )
-
             self.packing_plate_thickness = 0.0
             self.beta_pkg = 1.0
 
-        
-
-        
+        # Initialize other parameters
         self.count = 0
         self.slip_res = None
         self.yield_stress = None
-        # self.number_bolts = 0``
         self.cap_red = False
         self.bolt_dia_grade_status = False
         self.dia_available = False
@@ -528,6 +520,8 @@ class ButtJointBolted(MomentConnection):
         self.bij = 0
         self.blg = 0
         self.cover_plate = design_dictionary[KEY_COVER_PLATE]
+        
+        # Start bolt selection process
         self.select_bolt_dia_and_grade(self,design_dictionary)
 
     def select_bolt_dia_and_grade(self,design_dictionary):
@@ -712,11 +706,12 @@ class ButtJointBolted(MomentConnection):
             logger.info(" :=========End Of design==========")
 
     def check_capacity_reduction_1(self,design_dictionary):
+        """Long joint reduction as per Cl. 10.3.3.1 of IS 800:2007"""
         if self.number_bolts > 2:
-            lg = (self.rows - 1)*self.bolt.min_pitch_round
-            if lg > 15 * self.bolt.bolt_diameter_provided:
-                self.bij = 1.075 - (lg / (200 * self.bolt.bolt_diameter_provided))
-                # Add bounds check
+            lj = (self.rows - 1)*self.bolt.min_pitch_round
+            if lj > 15 * self.bolt.bolt_diameter_provided:
+                # βlj calculation as per Eq. 3.7
+                self.bij = 1.075 - (lj / (200 * self.bolt.bolt_diameter_provided))
                 self.bij = max(0.75, min(1.0, self.bij))
         
         if self.bij >= 0.75 and self.bij <= 1.0:
@@ -732,11 +727,13 @@ class ButtJointBolted(MomentConnection):
         self.check_capacity_reduction_2(self,design_dictionary)
 
     def check_capacity_reduction_2(self,design_dictionary):
+        """Large grip reduction as per Cl. 10.3.3.2 of IS 800:2007"""
         self.cap_red = False
         
-        if self.plate1thk + self.plate2thk > 5 * self.bolt.bolt_diameter_provided:
-            self.blg = 8 / (3 + (self.plate1thk + self.plate2thk / self.bolt.bolt_diameter_provided))
-            # Add bounds check
+        lg = self.plate1thk + self.plate2thk
+        if lg > 5 * self.bolt.bolt_diameter_provided:
+            # βlg calculation as per Eq. 3.8
+            self.blg = 8 / (3 + (lg/self.bolt.bolt_diameter_provided))
             self.blg = max(0.0, min(1.0, self.blg))
         
         if self.blg < self.bij and self.blg != 0:
@@ -748,7 +745,6 @@ class ButtJointBolted(MomentConnection):
                 self.slip_res = self.bolt.bolt_shear_capacity
                 self.bolt.bolt_capacity = self.slip_res
             
-            # Add maximum recursion depth check
             if hit < 5:  # Limit recursion depth
                 self.number_r_c_bolts(self,design_dictionary,1,0)
             else:
@@ -761,9 +757,8 @@ class ButtJointBolted(MomentConnection):
             self.design_status = True
             self.final_formatting(self,design_dictionary)
 
-
-
     def final_formatting(self,design_dictionary):
+        """Final checks and formatting as per IS 800:2007"""
         # Handle single row case
         if self.rows <= 1:
             self.final_gauge = 0  # No gauge distance needed for single row
@@ -771,8 +766,10 @@ class ButtJointBolted(MomentConnection):
             self.final_end_dist = self.bolt.min_end_dist_round
             self.final_edge_dist = self.bolt.min_edge_dist_round
         else:
+            # Calculate gauge distance as per Cl. 10.2.2
             gauge_dist = (float(self.width) - 2*self.bolt.min_end_dist_round)/(self.rows - 1)
 
+            # Check maximum pitch and gauge as per Cl. 10.2.3.1
             if gauge_dist > self.max_gauge_round:
                 self.final_gauge = self.max_gauge_round
                 self.final_pitch = self.bolt.min_pitch_round
@@ -798,6 +795,7 @@ class ButtJointBolted(MomentConnection):
                     self.design_status = True
 
         if self.design_status:
+            # Convert capacities to kN
             if self.bolt.bolt_type == 'Bearing Bolt':
                 self.bolt.bolt_shear_capacity = self.bolt.bolt_shear_capacity/ 1000
                 self.bolt.bolt_bearing_capacity = self.bolt.bolt_bearing_capacity / 1000
@@ -811,6 +809,7 @@ class ButtJointBolted(MomentConnection):
                 self.bolt.bolt_capacity = self.bolt.bolt_capacity / 1000
                 self.bolt.bolt_capacity = round(self.bolt.bolt_capacity, 2)
             
+            # Calculate utilization ratio
             bltcap = self.bolt.bolt_capacity
             if bltcap < 1:
                 bltcap = 1
@@ -824,6 +823,7 @@ class ButtJointBolted(MomentConnection):
                 logger.info(" :=========End Of design===========")
                 return
 
+            # Round final values
             self.final_gauge = round(self.final_gauge,0)
             self.final_pitch = round(self.final_pitch,0)
             print("FINAL FINAL",self.bolt)
